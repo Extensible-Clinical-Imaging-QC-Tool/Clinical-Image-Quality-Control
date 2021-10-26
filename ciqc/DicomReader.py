@@ -45,7 +45,7 @@ class DicomReader:
             print("Unsupported bit depth, image may not be displayed correctly.")
         cv2.imshow("Dicom Image", pixel_data)
         cv2.waitKey(0)
-        cv2.destroyAllwindows
+        cv2.destroyAllWindows()
     
     def write_new_image(self, pixel_data: np.ndarray) -> None:
         pass
