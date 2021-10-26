@@ -8,4 +8,4 @@ for use in preprocessing clinical images for trials.
 from .version_info import VERSION_INT, VERSION  # noqa
 
 
-from .remove_text import RemoveText    # noqa
+from .remove_text import *    # noqa
