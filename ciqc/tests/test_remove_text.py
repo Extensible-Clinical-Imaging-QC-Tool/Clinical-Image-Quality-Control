@@ -17,5 +17,5 @@ class TwoCompartmentModelTest(unittest.TestCase):
         test_img = cv2.imread(os.path.join("ciqc", "tests", "test_text_removal.png"))
         box_image = draw_boxes_on_text(img)
 
-        np.testing.assert_equal(box_image, test_img)
+        np.testing.assert_almost_equal(box_image, test_img)
         pass
