@@ -1,6 +1,7 @@
 import os
 import cv2
 import unittest
+import numpy as np
 from pydicom import dcmread
 from ciqc.remove_text import draw_boxes_on_text
 
@@ -13,7 +14,8 @@ class TwoCompartmentModelTest(unittest.TestCase):
         dicom = dcmread(path)
         img = dicom.pixel_array
 
-        test_img = cv2.imread("test_boxes_img.png")
+        test_img = cv2.imread(os.path.join("ciqc", "tests", "test_boxes_img.png"))
         box_image = draw_boxes_on_text(img)
 
-        self.assertEqual(box_image, test_img)
+        np.testing.assert_equal(box_image, test_img)
+        pass

@@ -1,6 +1,10 @@
 import cv2
+import os
 import numpy as np
 import pytesseract
+
+if os.name == 'nt':
+    pytesseract.pytesseract.tesseract_cmd = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
 
 
 def draw_boxes_on_text(img):
