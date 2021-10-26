@@ -32,8 +32,17 @@ class DicomReader:
 
     
     def show_image(self) -> None:
-        # Multiply image by 16 to increase dynamic range for CV2
-        pixel_data = self.pixel_array  * 16
+        """Displays the image data of the dicom using OpenCV.
+        Supports displaying images with a bit depth of 8 or 16. 
+        Unsuppoted bit depths may not be displayed correctly by OpenCV.
+        """        
+        # Display image depending on its bit depth
+        if self.dicom.BitsStored == 8:
+            pixel_data = self.pixel_array
+        elif self.dicom.BitsStored == 16:
+            pixel_data = self.pixel_array * 16
+        else:
+            print("Unsupported bit depth, image may not be displayed correctly.")
         cv2.imshow("Dicom Image", pixel_data)
         cv2.waitKey(0)
         cv2.destroyAllwindows
