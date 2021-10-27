@@ -6,7 +6,8 @@ from DicomReader import DicomReader
 from pathlib import Path
 
 # Read in DICOM
-data_reader = DicomReader("ultrasound1.dcm", "test-dicoms")
+print(Path.cwd())
+data_reader = DicomReader("xray1.dcm", "Clinical-Image-Quality-Control/test-dicoms")
 data_reader.show_image()
 
 
@@ -15,5 +16,5 @@ if os.name == 'nt':
     pytesseract.pytesseract.tesseract_cmd = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
 
 img_boxes = draw_boxes_on_text(data_reader.pixel_array)
-cv2.imshow("Output", img_boxes)
-cv2.waitKey(0)
+data_reader.write_new_image(img_boxes)
+data_reader.show_image()

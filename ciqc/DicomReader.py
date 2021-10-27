@@ -2,6 +2,7 @@ import pydicom
 import numpy as np
 from pathlib import Path
 import cv2
+import gdcm
 
 class DicomReader:
     """
@@ -19,18 +20,19 @@ class DicomReader:
     :ivar pixel_array: Array of pixel values in the dicom file.
     :pixel_array type: ndarray
     """
- 
 
     def __init__(self, fname: str, path: str = ".") -> None:   
         self.fpath = Path(path) / fname
         self.dicom = self.read_file()
-        self.pixel_array = self.dicom.pixel_array
-        
+    
+    @property
+    def pixel_array(self):
+        return self.dicom.pixel_array
+
     def read_file(self):
         dicom = pydicom.dcmread(self.fpath)
         return dicom
 
-    
     def show_image(self) -> None:
         """Displays the image data of the dicom using OpenCV.
         Supports displaying images with a bit depth of 8 or 16. 
@@ -38,17 +40,29 @@ class DicomReader:
         """        
         # Display image depending on its bit depth
         if self.dicom.BitsStored == 8:
-            pixel_data = self.pixel_array
+            pixel_data = self.dicom.pixel_array
         elif self.dicom.BitsStored == 16:
-            pixel_data = self.pixel_array * 16
+            pixel_data = self.dicom.pixel_array * 16
         else:
             print("Unsupported bit depth, image may not be displayed correctly.")
+            pixel_data = self.dicom.pixel_array
+        #pixel_data = cv2.cvtColor(pixel_data, cv2.COLOR_BGR2RGB)
         cv2.imshow("Dicom Image", pixel_data)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
     
     def write_new_image(self, pixel_data: np.ndarray) -> None:
-        pass
+        """Takes in a byte array and writes out a new image to the PixelData.
+        Saves all images as uncompressed using little endian explicit, changing the transfer 
+        protocol UID as well.
+
+        :param pixel_data: Array of pixel values to be saved.
+        :type pixel_data: np.ndarray
+        """
+        #TODO Allow changing of image size & bit depth
+
+        self.dicom.PixelData = pixel_data.tobytes()
+        self.dicom.file_meta.TransferSyntaxUID = pydicom.uid.ExplicitVRLittleEndian
 
     def write_out_dicom(self, fname, path='.') -> bool:
         pass
