@@ -46,7 +46,6 @@ class DicomReader:
         else:
             print("Unsupported bit depth, image may not be displayed correctly.")
             pixel_data = self.dicom.pixel_array
-        #pixel_data = cv2.cvtColor(pixel_data, cv2.COLOR_BGR2RGB)
         cv2.imshow("Dicom Image", pixel_data)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
