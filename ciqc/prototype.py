@@ -7,7 +7,7 @@ from pathlib import Path
 
 # Read in DICOM
 print(Path.cwd())
-data_reader = DicomReader("xray1.dcm", "Clinical-Image-Quality-Control/test-dicoms")
+data_reader = DicomReader("xray1.dcm", "test-dicoms")
 data_reader.show_image()
 
 
