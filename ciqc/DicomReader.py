@@ -2,7 +2,7 @@ import pydicom
 import numpy as np
 from pathlib import Path
 import cv2
-import gdcm
+
 
 class DicomReader:
     """
@@ -47,7 +47,14 @@ class DicomReader:
             print("Unsupported bit depth, image may not be displayed correctly.")
             pixel_data = self.dicom.pixel_array
         #pixel_data = cv2.cvtColor(pixel_data, cv2.COLOR_BGR2RGB)
-        cv2.imshow("Dicom Image", pixel_data)
+
+        #Resize Images so they are consistent and scaled so they are all of the same height.
+        height, width, dimension = pixel_data.shape
+        height_to_width_ratio = int(height) / int(width)
+        required_width = int(500.0/height_to_width_ratio)
+        required_height = int(500.0)
+        newImg = cv2.resize(pixel_data, (required_width, required_height))
+        cv2.imshow("Dicom Image", newImg)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
     
