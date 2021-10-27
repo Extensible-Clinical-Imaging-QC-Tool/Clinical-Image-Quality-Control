@@ -2,11 +2,11 @@ import pydicom
 import numpy as np
 from pathlib import Path
 import cv2
-import gdcm
+
 
 class DicomReader:
     """
-    A Dicom Reader object that can parse DICOM files, with functionality to read 
+    A Dicom Reader object that can parse DICOM files, with functionality to read
     and write tags within the file.
     
     :param fname: File name for the DICOM file
@@ -24,7 +24,7 @@ class DicomReader:
     def __init__(self, fname: str, path: str = ".") -> None:   
         self.fpath = Path(path) / fname
         self.dicom = self.read_file()
-    
+
     @property
     def pixel_array(self):
         return self.dicom.pixel_array
@@ -35,9 +35,9 @@ class DicomReader:
 
     def show_image(self) -> None:
         """Displays the image data of the dicom using OpenCV.
-        Supports displaying images with a bit depth of 8 or 16. 
+        Supports displaying images with a bit depth of 8 or 16.
         Unsuppoted bit depths may not be displayed correctly by OpenCV.
-        """        
+        """       
         # Display image depending on its bit depth
         if self.dicom.BitsStored == 8:
             pixel_data = self.dicom.pixel_array
@@ -58,10 +58,27 @@ class DicomReader:
         :param pixel_data: Array of pixel values to be saved.
         :type pixel_data: np.ndarray
         """
-        #TODO Allow changing of image size & bit depth
+        # TODO Allow changing of image size & bit depth
+
+        # Ensure that the width and height of the image are the same
+        if not (pixel_data.shape[0] == self.dicom.Rows and pixel_data.shape[1] == self.dicom.Columns):
+            raise ValueError("The pixel data provided must have the same dimensions as the original DICOM image.")
 
         self.dicom.PixelData = pixel_data.tobytes()
         self.dicom.file_meta.TransferSyntaxUID = pydicom.uid.ExplicitVRLittleEndian
 
-    def write_out_dicom(self, fname, path='.') -> bool:
-        pass
+    def write_out_dicom(self, fname: str = None, path: str = '.') -> None:
+        """Writes out the dicom to a dcm file. If no filename is provided then the original
+        dcm file will be overwritten.
+
+        :param fname: Filename to save, defaults to None and overwrites original
+        :type fname: str, optional
+        :param path: Path to save directory, defaults to '.'
+        :type path: str, optional
+        """
+        if fname:
+            fname = Path(fname)
+            save_path = path / fname
+            self.dicom.save_as(save_path)
+        else:
+            self.dicom.save_as(self.fpath)
