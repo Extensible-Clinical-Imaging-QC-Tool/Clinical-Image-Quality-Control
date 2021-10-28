@@ -6,7 +6,7 @@ from pydicom import dcmread
 from ciqc.remove_text import draw_boxes_on_text
 
 
-class TwoCompartmentModelTest(unittest.TestCase):
+class RemoveTextTest(unittest.TestCase):
 
     def test_draw_boxes_on_text(self):
         data_dir = os.path.abspath(os.path.join("test-dicoms"))
@@ -18,4 +18,3 @@ class TwoCompartmentModelTest(unittest.TestCase):
         box_image = draw_boxes_on_text(img)
 
         np.testing.assert_almost_equal(box_image, test_img)
-        pass
