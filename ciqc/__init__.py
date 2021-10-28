@@ -9,3 +9,4 @@ from .version_info import VERSION_INT, VERSION  # noqa
 
 
 from .remove_text import *    # noqa
+from .DicomReader import *    # noqa
