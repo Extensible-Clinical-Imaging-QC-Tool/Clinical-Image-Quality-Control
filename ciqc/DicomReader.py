@@ -46,13 +46,12 @@ class DicomReader:
         else:
             print("Unsupported bit depth, image may not be displayed correctly.")
             pixel_data = self.dicom.pixel_array
-        #pixel_data = cv2.cvtColor(pixel_data, cv2.COLOR_BGR2RGB)
 
         #Resize Images so they are consistent and scaled so they are all of the same height.
         height, width, dimension = pixel_data.shape
-        height_to_width_ratio = int(height) / int(width)
+        height_to_width_ratio = int(height / width)
         required_width = int(500.0/height_to_width_ratio)
-        required_height = int(500.0)
+        required_height = 500
         newImg = cv2.resize(pixel_data, (required_width, required_height))
         cv2.imshow("Dicom Image", newImg)
         cv2.waitKey(0)
