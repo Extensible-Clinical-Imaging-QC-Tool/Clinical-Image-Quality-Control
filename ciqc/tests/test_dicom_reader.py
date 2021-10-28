@@ -1,8 +1,5 @@
-import os
-# import cv2
 import unittest
 import numpy as np
-# from pydicom import dcmread
 from ciqc.DicomReader import DicomReader
 from pathlib import Path
 
@@ -10,13 +7,11 @@ from pathlib import Path
 class DicomReaderTest(unittest.TestCase):
 
     def test_pixel_array(self):
-        test_data_dir = os.path.abspath("ciqc/tests")
-        test_path = os.path.join(test_data_dir, "test_dicom_pixel.npy")
+        test_path = Path("ciqc/tests/test_dicom_pixel.npy").absolute()
 
-        data_dir = os.path.abspath(os.path.join("test-dicoms"))
-        path = os.path.join(data_dir, "ultrasound1.dcm")
+        dicom_path = Path("test-dicoms/ultrasound1.dcm").absolute()
 
-        dicom = DicomReader(path)
+        dicom = DicomReader(dicom_path)
         img = dicom.pixel_array
 
         np.testing.assert_array_equal(np.load(test_path), img)
