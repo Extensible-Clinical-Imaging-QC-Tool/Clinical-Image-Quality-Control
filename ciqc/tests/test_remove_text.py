@@ -16,7 +16,7 @@ class RemoveTextTest(unittest.TestCase):
     """
     def test_draw_boxes_on_text(self):
         data_dir = os.path.abspath(os.path.join("test-dicoms"))
-        path = os.path.join(data_dir, "pet5.dcm")
+        path = os.path.join(data_dir, "ultrasound2.dcm")
         dicom = dcmread(path)
         img = dicom.pixel_array
         box_image = draw_boxes_on_text(img)
