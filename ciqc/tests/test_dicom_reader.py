@@ -4,6 +4,7 @@ import unittest
 import numpy as np
 # from pydicom import dcmread
 from ciqc.DicomReader import DicomReader
+from pathlib import Path
 
 
 class DicomReaderTest(unittest.TestCase):
