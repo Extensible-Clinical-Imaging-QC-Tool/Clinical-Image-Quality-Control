@@ -4,9 +4,9 @@ name: Unit Tests
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
   workflow_dispatch:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
