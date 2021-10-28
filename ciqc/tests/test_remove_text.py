@@ -18,4 +18,3 @@ class RemoveTextTest(unittest.TestCase):
         box_image = draw_boxes_on_text(img)
 
         np.testing.assert_almost_equal(box_image, test_img)
-        pass
