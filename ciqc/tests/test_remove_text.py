@@ -1,5 +1,6 @@
-import os
 import unittest
+import os
+from pathlib import Path
 from numpy.testing import assert_equal
 from pydicom import dcmread
 import pytesseract
@@ -15,8 +16,7 @@ class RemoveTextTest(unittest.TestCase):
     on the image returned by draw_boxes_on_text
     """
     def test_draw_boxes_on_text(self):
-        data_dir = os.path.abspath(os.path.join("test-dicoms"))
-        path = os.path.join(data_dir, "ultrasound2.dcm")
+        path = Path("test-dicoms") / "ultrasound2.dcm"
         dicom = dcmread(path)
         img = dicom.pixel_array
         box_image = draw_boxes_on_text(img)

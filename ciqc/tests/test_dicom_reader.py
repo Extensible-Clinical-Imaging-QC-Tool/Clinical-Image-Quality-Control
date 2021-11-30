@@ -7,9 +7,9 @@ from pathlib import Path
 class DicomReaderTest(unittest.TestCase):
 
     def test_pixel_array(self):
-        test_path = Path("ciqc/tests/test_dicom_pixel.npy").absolute()
+        test_path = Path("ciqc/tests/test_dicom_pixel.npy")
 
-        dicom_path = Path("test-dicoms/ultrasound1.dcm").absolute()
+        dicom_path = Path("test-dicoms/ultrasound1.dcm")
 
         dicom = DicomReader(dicom_path)
         img = dicom.pixel_array
