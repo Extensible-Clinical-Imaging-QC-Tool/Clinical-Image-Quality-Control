@@ -2,6 +2,7 @@ import pydicom
 import numpy as np
 from pathlib import Path
 import cv2
+from tkinter import Tk
 
 
 class DicomReader:
@@ -31,10 +32,13 @@ class DicomReader:
         dicom = pydicom.dcmread(self.path)
         return dicom
 
-    def show_image(self) -> None:
+    def show_image(self, resize=True) -> None:
         """Displays the image data of the dicom using OpenCV.
         Supports displaying images with a bit depth of 8 or 16.
         Unsuppoted bit depths may not be displayed correctly by OpenCV.
+
+        :param resize: Option to resize images before display, defaults to True
+        :type resize: bool, optional
         """       
         # Display image depending on its bit depth
         if self.dicom.BitsStored == 8:
@@ -45,15 +49,28 @@ class DicomReader:
             print("Unsupported bit depth, image may not be displayed correctly.")
             pixel_data = self.dicom.pixel_array
         #pixel_data = cv2.cvtColor(pixel_data, cv2.COLOR_BGR2RGB)
-
-        #Resize Images so they are consistent and scaled so they are all of the same height.
-        # TODO update to work with 2 dimensional pixel arrays (greyscale)
-        height, width, dimension = pixel_data.shape
-        height_to_width_ratio = int(height) / int(width)
-        required_width = int(500.0/height_to_width_ratio)
-        required_height = int(500.0)
-        newImg = cv2.resize(pixel_data, (required_width, required_height))
-        cv2.imshow("Dicom Image", newImg)
+        
+        if resize:
+            #Resize Images so they are consistent and scaled so they are all of the same height.
+            if len(pixel_data.shape) == 2:
+                height, width = pixel_data.shape
+            elif len(pixel_data.shape) == 3:
+                height, width, _ = pixel_data.shape
+            else:
+                raise ValueError("Can only process DICOM images with 2 or 3 dimensions.")
+            
+            # Display image as half window height
+            
+            root = Tk()
+            w_height = root.winfo_screenheight()
+            required_height = int(w_height * 0.5)
+            resize_ratio = required_height / int(height)
+            required_width = int(width *  resize_ratio)
+            display_img = cv2.resize(pixel_data, (required_width, required_height))
+        else:
+            display_img = pixel_data
+        
+        cv2.imshow("Dicom Image", display_img)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
     
