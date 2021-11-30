@@ -9,20 +9,18 @@ class DicomReader:
     A Dicom Reader object that can parse DICOM files, with functionality to read
     and write tags within the file.
     
-    :param fname: File name for the DICOM file
-    :type fname: str
-    :param path: Path to the DICOM file using forward-slash, defaults to "."
+    :param path: String path to the DICOM file 
     :type path: str, optional
     :ivar dicom: A dataset object for the DICOM file, using the pydicom package.
     :type dicom: FileDataset
-    :ivar fpath: Full path to the DICOM file
-    :type fpath: PosixPath
+    :ivar path: Converted Path to the DICOM file
+    :type path: PosixPath
     :ivar pixel_array: Array of pixel values in the dicom file.
     :pixel_array type: ndarray
     """
 
-    def __init__(self, fname: str, path: str = ".") -> None:   
-        self.fpath = Path(path) / fname
+    def __init__(self, path: str) -> None:   
+        self.path = Path(path)
         self.dicom = self.read_file()
 
     @property
@@ -30,7 +28,7 @@ class DicomReader:
         return self.dicom.pixel_array
 
     def read_file(self):
-        dicom = pydicom.dcmread(self.fpath)
+        dicom = pydicom.dcmread(self.path)
         return dicom
 
     def show_image(self) -> None:
@@ -49,6 +47,7 @@ class DicomReader:
         #pixel_data = cv2.cvtColor(pixel_data, cv2.COLOR_BGR2RGB)
 
         #Resize Images so they are consistent and scaled so they are all of the same height.
+        # TODO update to work with 2 dimensional pixel arrays (greyscale)
         height, width, dimension = pixel_data.shape
         height_to_width_ratio = int(height) / int(width)
         required_width = int(500.0/height_to_width_ratio)
@@ -86,7 +85,7 @@ class DicomReader:
         """
         if fname:
             fname = Path(fname)
-            save_path = path / fname
+            save_path = path.parent / fname
             self.dicom.save_as(save_path)
         else:
-            self.dicom.save_as(self.fpath)
+            self.dicom.save_as(self.path)
