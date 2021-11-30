@@ -10,7 +10,7 @@ from pathlib import Path
 dicoms = ['ct1', 'ct2', 'ct3','xray1', 'xray2', 'xray3', 'pet1', 'pet2', 'pet3', 'mri1', 'mri2', 'mri3','ultrasound1', 'ultrasound2' ]
 for dicom in dicoms:
     print(Path.cwd())
-    data_reader = DicomReader(dicom + '.dcm', "test-dicoms")
+    data_reader = DicomReader(Path("test-dicoms") / (dicom + '.dcm'))
     data_reader.show_image()
 
 
