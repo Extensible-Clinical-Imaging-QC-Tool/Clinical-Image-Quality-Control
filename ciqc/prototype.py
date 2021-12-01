@@ -1,23 +1,23 @@
-import cv2
 import os
-import pytesseract
+import cv2
 from remove_text import draw_boxes_on_text
 from DicomReader import DicomReader
 from pathlib import Path
 
 # Read in DICOM
 
-dicoms = ['ct1', 'ct2', 'ct3','xray1', 'xray2', 'xray3', 'pet1', 'pet2', 'pet3', 'mri1', 'mri2', 'mri3','ultrasound1', 'ultrasound2' ]
+dicoms = []
+for root, dirs, files in os.walk(Path("eval-dataset/raw-dicoms/GEMS_IMG")):
+    for file in files:
+        # if file.endswith('.dcm'):
+        dicoms.append(os.path.join(root, file))
+
 for dicom in dicoms:
-    print(Path.cwd())
-    data_reader = DicomReader(Path("test-dicoms") / (dicom + '.dcm'))
-    data_reader.show_image()
+    data_reader = DicomReader(dicom)
+    data_reader.show_image(resize=False)
 
-
-# Demo Text Blocking
-    if os.name == 'nt':
-        pytesseract.pytesseract.tesseract_cmd = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
-
-    img_boxes = draw_boxes_on_text(data_reader.pixel_array)
-    data_reader.write_new_image(img_boxes)
-    data_reader.show_image()
+    # Demo Text Blockings
+    img_boxes = draw_boxes_on_text(data_reader.pixel_data)
+    cv2.imshow("Dicom Image", img_boxes)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
