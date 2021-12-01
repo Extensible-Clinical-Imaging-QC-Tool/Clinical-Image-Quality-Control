@@ -9,8 +9,8 @@ class DicomReader:
     """
     A Dicom Reader object that can parse DICOM files, with functionality to read
     and write tags within the file.
-    
-    :param path: String path to the DICOM file 
+
+    :param path: String path to the DICOM file
     :type path: str, optional
     :ivar dicom: A dataset object for the DICOM file, using the pydicom package.
     :type dicom: FileDataset
@@ -20,13 +20,26 @@ class DicomReader:
     :pixel_array type: ndarray
     """
 
-    def __init__(self, path: str) -> None:   
+    def __init__(self, path: str) -> None:
         self.path = Path(path)
         self.dicom = self.read_file()
 
-    @property
-    def pixel_array(self):
-        return self.dicom.pixel_array
+        # If multi-frame show only first frame
+        try:
+            frames = self.dicom.NumberOfFrames
+        except AttributeError:
+            frames = 1
+        if frames > 1:
+            self.pixel_data = self.dicom.pixel_array[1, :]
+        else:
+            self.pixel_data = self.dicom.pixel_array
+
+        # Display image depending on its bit depth
+        if self.dicom.BitsStored == 16:
+            self.pixel_data *= 16
+
+        if self.dicom.PhotometricInterpretation == "YBR_FULL_422":
+            self.pixel_data = cv2.cvtColor(self.pixel_data[:, :, 0:4], cv2.COLOR_YUV2BGR)
 
     def read_file(self):
         dicom = pydicom.dcmread(self.path)
@@ -39,44 +52,29 @@ class DicomReader:
 
         :param resize: Option to resize images before display, defaults to True
         :type resize: bool, optional
-        """       
-        # Display image depending on its bit depth
-        if self.dicom.BitsStored == 8:
-            pixel_data = self.dicom.pixel_array
-        elif self.dicom.BitsStored == 16:
-            pixel_data = self.dicom.pixel_array * 16
-        else:
-            print("Unsupported bit depth, image may not be displayed correctly.")
-            pixel_data = self.dicom.pixel_array
-        #pixel_data = cv2.cvtColor(pixel_data, cv2.COLOR_BGR2RGB)
-        
+        """
         if resize:
-            #Resize Images so they are consistent and scaled so they are all of the same height.
-            if len(pixel_data.shape) == 2:
-                height, width = pixel_data.shape
-            elif len(pixel_data.shape) == 3:
-                height, width, _ = pixel_data.shape
-            else:
-                raise ValueError("Can only process DICOM images with 2 or 3 dimensions.")
-            
+            # Resize Images so they are consistent and scaled so they are all of the same height.
+            height = self.dicom.Rows
+            width = self.dicom.Columns
+
             # Display image as half window height
-            
             root = Tk()
             w_height = root.winfo_screenheight()
             required_height = int(w_height * 0.5)
             resize_ratio = required_height / int(height)
-            required_width = int(width *  resize_ratio)
-            display_img = cv2.resize(pixel_data, (required_width, required_height))
+            required_width = int(width * resize_ratio)
+            display_img = cv2.resize(self.pixel_data, (required_width, required_height))
         else:
-            display_img = pixel_data
-        
+            display_img = self.pixel_data
+
         cv2.imshow("Dicom Image", display_img)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-    
+
     def write_new_image(self, pixel_data: np.ndarray) -> None:
         """Takes in a byte array and writes out a new image to the PixelData.
-        Saves all images as uncompressed using little endian explicit, changing the transfer 
+        Saves all images as uncompressed using little endian explicit, changing the transfer
         protocol UID as well.
 
         :param pixel_data: Array of pixel values to be saved.
